@@ -1,7 +1,7 @@
 package Foif;
 
 # use strict;
-# use locale; # Ez kell az ABC szerinti helyes rendezéshez.
+# use locale; # Ez kell az ABC szerinti helyes rendezÃ©shez.
 # use encoding "LATIN1";
 # use encoding "LATIN2";
 # use encoding "UTF8";
@@ -75,7 +75,7 @@ sub ParseRecord() {
 	foreach my $type ( keys %$r ) {
 		my $oneData={};
 		foreach my $d ( split(/,/,$r->{$type}) ) {
-			#if ( $d =~ /(\w+)=([\w °'."]*)/ ) {
+			#if ( $d =~ /(\w+)=([\w Â°'."]*)/ ) {
 			if ( $d =~ /(\w+)=(.*)/ ) {
 			$oneData->{$1}=$2;
 			} elsif ( $d =~ /(Not Active)/ ) {
@@ -140,7 +140,7 @@ sub PrintRow() {
 __END__
 
 #
-# Telefonkönyv (minat)
+# TelefonkÃ¶nyv (minat)
 #
 
 sub New_old {
