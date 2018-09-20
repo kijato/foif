@@ -1,7 +1,7 @@
 package Foif;
 
-# use strict;
-# use locale; # Ez kell az ABC szerinti helyes rendezéshez.
+use strict;
+use locale; # Ez kell az ABC szerinti helyes rendezéshez.
 # use encoding "LATIN1";
 # use encoding "LATIN2";
 # use encoding "UTF8";
@@ -29,7 +29,7 @@ sub Init() {
 	while(<FH>) {
 		chomp;
 
-		if ( /^--(FieldGenius.*)$/ ) {
+		if ( /^--(.*FieldGenius.*)$/ ) {
 		  $software = '  '.$1;
 		}
 
@@ -37,10 +37,10 @@ sub Init() {
 			$antenna = $2;
 		}
 
-		if ( /^--GNSS (Profile Tolerance RT):\s*(.*)$/ or
-			 /^--GNSS (Profile Tolerance PP):\s*(.*)$/ or
-			 /^--GNSS (Statistics RT):\s*(.*)$/ or
-			 /^--GNSS (Statistics PP):\s*(.*)$/ or
+		if ( /^--(GNSS Profile Tolerance RT):\s*(.*)$/ or
+			 /^--(GNSS Profile Tolerance PP):\s*(.*)$/ or
+			 /^--(GNSS Statistics RT):\s*(.*)$/ or
+			 /^--(GNSS Statistics PP):\s*(.*)$/ or
 			 /^--(PP Time):\s*(.*)$/ or
 			 /^(AH|EP|BL|CV|GS),(.*)$/
 			 or
@@ -60,7 +60,7 @@ sub Init() {
 	}
 	close FH;	
 		
-	ParseRecord($self->{'metaData'});
+	#ParseRecord($self->{'metaData'});
 	ParseRow($self->{'datas'});
 
 }
@@ -69,6 +69,13 @@ sub Init() {
 ##############
 # Functions: #
 ##############
+
+sub ParseRow() {
+	my $dataref = shift;
+	foreach my $r (@{$dataref}) {
+		&ParseRecord($r);
+	}
+}
 
 sub ParseRecord() {
 	my $r = shift;
@@ -87,13 +94,6 @@ sub ParseRecord() {
 			}
 		}
 		$r->{$type}=$oneData;
-	}
-}
-
-sub ParseRow() {
-	my $dataref = shift;
-	foreach my $r (@{$dataref}) {
-		&ParseRecord($r);
 	}
 }
 
@@ -136,45 +136,3 @@ sub PrintRow() {
 }
 
 1;
-
-__END__
-
-#
-# Telefonkönyv (minat)
-#
-
-sub New_old {
-	my $type = shift;
-	my $self = {};
-	bless $self, $type;
-	my $status = $self->Init( @_ );
-	print "$status\n", return ""  if $status;
-	return $self;
-}
-
-sub Init_old() {
-	my ($self, $file) = @_;
-	my ($name, $number);
-	open(BOOK, $file) or return "Init() failed: can not open $file\n";
-	while( <BOOK> ) {
-		chop;
-		($name, $number) = split /\t/;
-		$self->AddEntry($name, $number);
-	}
-	close BOOK;
-	return "";
-}
-
-sub AddEntry() {
-	my ($self, $name, $number) = @_;
-	if($self{$name}) {
-		push @{$self{$name}}, $number;
-	} else {
-		$self{$name} = [ $number ];
-	}
-}
-
-sub LookupByName {
-	my ($self, $name) = @_;
-	return $self{$name};
-}
